@@ -1,7 +1,6 @@
 #ifndef POWER_CONSOLE_MODBUS_H
 #define POWER_CONSOLE_MODBUS_H
 
-#define USE_HOLDING_REGISTERS_ONLY
 #include <Arduino.h>
 #include <Modbus.h>
 
@@ -13,10 +12,10 @@ extern void modbus_set(word event, word value);
 enum
 {
     // The first register starts at address 0
-            ACTIONS,      // Always present, used for incoming actions
+    ACTIONS,      // Always present, used for incoming actions
 
     // Any registered events, denoted by 'triggered_by_register' in rs485_node of Lua script, 1 and up
-            CONNECT,
+    CONNECT,
     POWER_ON,
 
     TOTAL_ERRORS     // leave this one, error counter
@@ -105,11 +104,11 @@ void modbus_setup()
   Serial.println("ModBus Slave POWER_CONSOLE:192.168.14.11 for lua/Aliens.lua");
 
 #ifndef USE_ESP8266_TCP
-  mb.config(&RS485Serial, 57600, SSerialTxControl);
+  mb.config(&RS485Serial, 31250, SSerialTxControl);
   mb.setSlaveId(192.168.14.11);
 #else
-  mb.config("Aliens Room", "123123123");
-  WiFi.config(IPAddress(192, 168, 14, 11), IPAddress(), IPAddress(), IPAddress(), IPAddress());
+  mb.config("MT29501119", "ErikaKot");
+  WiFi.config(IPAddress(192, 168, 118, 11), IPAddress(), IPAddress(), IPAddress(), IPAddress());
 
   Serial.print("Connecting to Aliens Room ");
   while (WiFi.status() != WL_CONNECTED) {
