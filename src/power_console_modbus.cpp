@@ -9,9 +9,12 @@
 
 Atm_led red, green, blue;
 Atm_button powerOn, cableConnect;
+Atm_bit poweredOn;
 
 extern void modbus_setup();
+
 extern void modbus_loop();
+
 extern void modbus_set(word event, word value);
 
 //////////////// registers of POWER_CONSOLE ///////////////////
@@ -117,9 +120,6 @@ void modbus_set(word event, word value) {
 #ifdef USE_ESP8266_TCP
 #define CONNECT_PIN D6
 #define POWER_ON_PIN D7
-#else
-#define CONNECT_PIN A0
-#define POWER_ON_PIN A1
 #endif
 
 void modbus_setup() {
@@ -183,26 +183,30 @@ void modbus_loop() {
 void cableConnectCallback(int idx, int v, int up) {
     red.on();
     mb.Hreg(CONNECT, 1);
+    poweredOn.on();
 }
 
 void powerOnCallback(int idx, int v, int up) {
-    red.off();
-    green.on();
-    mb.Hreg(POWER_ON, 1);
+    if (poweredOn.state()) {
+        red.off();
+        green.on();
+        mb.Hreg(POWER_ON, 1);
+    }
 }
 
 void setup() {
     Serial.begin(115200);
     modbus_setup();
 
+    poweredOn.begin();
     red.begin(A2).off();
     green.begin(A3).off();
     blue.begin(A4).off();
 
-    powerOn.begin(POWER_ON_PIN)
+    powerOn.begin(A1)
             .onPress(powerOnCallback);
 
-    cableConnect.begin(CONNECT_PIN)
+    cableConnect.begin(A0)
             .onPress(cableConnectCallback);
 
 #ifdef MY_TEST_MODE
