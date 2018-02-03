@@ -4,6 +4,7 @@
 #define USE_HOLDING_REGISTERS_ONLY
 #include <Arduino.h>
 #include <Modbus.h>
+#include <Automaton.h>
 
 extern void modbus_setup();
 extern void modbus_loop();
@@ -170,11 +171,30 @@ void modbus_loop() {
 
 }
 
+Atm_led red, green, blue;
+Atm_button powerOn, cableConnect;
+
 void setup() {
 	Serial.begin(115200);
 	modbus_setup();
+
+    red.begin(A4);
+    green.begin(A3);
+    blue.begin(A2);
+    powerOn.begin(POWER_ON_PIN);
+    cableConnect.begin(CONNECT_PIN);
+
+#ifdef MY_TEST_MODE
+    red.blink(500, 500).start();
+    green.blink(500, 500).start();
+    blue.blink(500, 500).start();
+
+    powerOn.onPress( green, green.EVT_TOGGLE_BLINK);
+    cableConnect.onPress( blue, blue.EVT_TOGGLE_BLINK);
+#endif
 }
 
 void loop() {
 	modbus_loop();
+    automaton.run();
 }
