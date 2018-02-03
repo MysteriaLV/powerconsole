@@ -7,10 +7,11 @@
 #include <Modbus.h>
 #include <Automaton.h>
 
+Atm_led red, green, blue;
+Atm_button powerOn, cableConnect;
+
 extern void modbus_setup();
-
 extern void modbus_loop();
-
 extern void modbus_set(word event, word value);
 
 //////////////// registers of POWER_CONSOLE ///////////////////
@@ -76,6 +77,10 @@ void process_actions() {
         case 1 : // Put here code for Reset
             Serial.println("[Reset] action fired");
             digitalWrite(LED_BUILTIN, HIGH);
+            red.off();
+            blue.off();
+            green.off();
+
             break;
         case 2 : // Put here code for Connect
             Serial.println("[Connect] action fired");
@@ -174,9 +179,6 @@ void modbus_loop() {
 //	buttonStatus(POWER_ON, POWER_ON_PIN);
 
 }
-
-Atm_led red, green, blue;
-Atm_button powerOn, cableConnect;
 
 void cableConnectCallback(int idx, int v, int up) {
     red.on();
