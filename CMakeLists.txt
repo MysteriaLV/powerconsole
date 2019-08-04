@@ -1,11 +1,28 @@
+# !!! WARNING !!! AUTO-GENERATED FILE, PLEASE DO NOT MODIFY IT AND USE
+# https://docs.platformio.org/page/projectconf/section_env_build.html#build-flags
+#
+# If you need to override existing CMake configuration or add extra,
+# please create `CMakeListsUser.txt` in the root of project.
+# The `CMakeListsUser.txt` will not be overwritten by PlatformIO.
+
 cmake_minimum_required(VERSION 3.2)
 project(powerconsole)
 
 include(CMakeListsPrivate.txt)
 
+if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/CMakeListsUser.txt)
+include(CMakeListsUser.txt)
+endif()
+
 add_custom_target(
     PLATFORMIO_BUILD ALL
     COMMAND ${PLATFORMIO_CMD} -f -c clion run
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+add_custom_target(
+    PLATFORMIO_BUILD_VERBOSE ALL
+    COMMAND ${PLATFORMIO_CMD} -f -c clion run --verbose
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
@@ -18,6 +35,12 @@ add_custom_target(
 add_custom_target(
     PLATFORMIO_CLEAN ALL
     COMMAND ${PLATFORMIO_CMD} -f -c clion run --target clean
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+add_custom_target(
+    PLATFORMIO_MONITOR ALL
+    COMMAND ${PLATFORMIO_CMD} -f -c clion device monitor
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
@@ -50,19 +73,5 @@ add_custom_target(
     COMMAND ${PLATFORMIO_CMD} -f -c clion init --ide clion
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
-
-if(IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib)
-    add_custom_target(
-        CODE_COMPLETION_PIOLIB
-        SOURCES lib
-    )
-endif()
-
-if(IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/.piolibdeps)
-    add_custom_target(
-        CODE_COMPLETION_PIOLIBDEPS
-        SOURCES .piolibdeps
-    )
-endif()
 
 add_executable(${PROJECT_NAME} ${SRC_LIST})

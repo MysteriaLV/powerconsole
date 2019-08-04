@@ -84,6 +84,9 @@ void process_actions() {
             blue.off();
             green.off();
 
+            mb.Hreg(CONNECT, 0);
+            mb.Hreg(POWER_ON, 0);
+
             break;
         case 2 : // Put here code for Connect
             Serial.println("[Connect] action fired");
