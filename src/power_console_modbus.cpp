@@ -12,18 +12,20 @@ Atm_button powerOn, cableConnect;
 Atm_bit poweredOn;
 
 extern void modbus_setup();
-
 extern void modbus_loop();
-
 extern void modbus_set(word event, word value);
+
+
+void cableConnectCallback(int idx, int v, int up);
+void powerOnCallback(int idx, int v, int up);
 
 //////////////// registers of POWER_CONSOLE ///////////////////
 enum {
     // The first register starts at address 0
-            ACTIONS,      // Always present, used for incoming actions
+    ACTIONS,      // Always present, used for incoming actions
 
     // Any registered events, denoted by 'triggered_by_register' in rs485_node of Lua script, 1 and up
-            CONNECT,
+    CONNECT,
     POWER_ON,
 
     TOTAL_ERRORS     // leave this one, error counter
@@ -83,6 +85,7 @@ void process_actions() {
             red.off();
             blue.off();
             green.off();
+            poweredOn.off();
 
             mb.Hreg(CONNECT, 0);
             mb.Hreg(POWER_ON, 0);
@@ -91,6 +94,11 @@ void process_actions() {
         case 2 : // Put here code for Connect
             Serial.println("[Connect] action fired");
             digitalWrite(LED_BUILTIN, LOW);
+            cableConnectCallback(0, 0, 0);
+            break;
+        case 3 : // Put here code for Power_on
+            Serial.println("[Power_on] action fired");
+            powerOnCallback(0, 0, 0);
             break;
         default:
             break;
@@ -201,7 +209,8 @@ void setup() {
     Serial.begin(115200);
     modbus_setup();
 
-    poweredOn.begin();
+    poweredOn.begin()
+            .trace(Serial);
     red.begin(A2).off();
     green.begin(A3).off();
     blue.begin(A4).off();
