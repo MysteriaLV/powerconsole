@@ -57,3 +57,6 @@ compile_commands.json
 CTestTestfile.cmake
 .clang_complete
 .gcc-flags.json
+
+.pio
+.vscode

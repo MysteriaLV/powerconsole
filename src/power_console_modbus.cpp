@@ -90,6 +90,9 @@ void process_actions() {
             mb.Hreg(CONNECT, 0);
             mb.Hreg(POWER_ON, 0);
 
+            powerOn.trigger(Atm_button::EVT_RELEASE);
+            cableConnect.trigger(Atm_button::EVT_RELEASE);
+
             break;
         case 2 : // Put here code for Connect
             Serial.println("[Connect] action fired");
@@ -182,13 +185,6 @@ void modbus_setup() {
 void modbus_loop() {
     mb.task();              // not implemented yet: mb.Hreg(TOTAL_ERRORS, mb.task());
     process_actions();
-
-    // Notify main console of local events
-    // mb.Hreg(CONNECT, 1);
-    // mb.Hreg(POWER_ON, 1);
-//	buttonStatus(CONNECT, CONNECT_PIN);
-//	buttonStatus(POWER_ON, POWER_ON_PIN);
-
 }
 
 void cableConnectCallback(int idx, int v, int up) {
@@ -216,10 +212,15 @@ void setup() {
     blue.begin(A4).off();
 
     powerOn.begin(A1)
-            .onPress(powerOnCallback);
+            .onPress(powerOnCallback)
+            .trace(Serial);
 
     cableConnect.begin(A0)
-            .onPress(cableConnectCallback);
+            .onPress(cableConnectCallback)
+            .trace(Serial);
+
+    powerOn.trigger(Atm_button::EVT_RELEASE);
+    cableConnect.trigger(Atm_button::EVT_RELEASE);
 
 #ifdef MY_TEST_MODE
     red.blink(500, 500).start();
